@@ -454,6 +454,68 @@
   color: #ffffff;
 }
 
+/* Icons */
+.BtnWithIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.BtnIcon {
+  width: 16px;
+  height: 16px;
+  flex: 0 0 auto;
+}
+
+.LabelWithIcon {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.UiIcon {
+  width: 14px;
+  height: 14px;
+  color: rgba(15, 23, 42, 0.75);
+}
+
+.ActionIcon {
+  width: 18px;
+  height: 18px;
+  color: rgba(100, 116, 139, 0.75);
+}
+
+.ActionIcon.success {
+  color: var(--success);
+}
+
+/* Ensure icons follow existing accent hover states */
+.BtnPrimary .BtnIcon,
+.BtnSuccess .BtnIcon {
+  color: #ffffff;
+}
+
+.BtnDanger .BtnIcon {
+  color: #991b1b;
+}
+
+.BtnGhost .BtnIcon {
+  color: rgba(15, 23, 42, 0.85);
+}
+
+.Btn:hover .BtnIcon {
+  filter: drop-shadow(0 6px 10px rgba(17, 24, 39, 0.10));
+}
+
+.CheckBtn:hover .ActionIcon {
+  color: rgba(59, 130, 246, 0.85);
+}
+
+.CheckBtn.isChecked .ActionIcon {
+  color: var(--success);
+}
+
 .BtnSuccess {
   background: var(--success);
   border-color: rgba(6, 182, 212, 0.25);

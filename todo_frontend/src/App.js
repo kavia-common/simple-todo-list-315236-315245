@@ -1,4 +1,13 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
+import {
+  FiCheck,
+  FiCircle,
+  FiEdit2,
+  FiFilter,
+  FiPlus,
+  FiTrash2,
+  FiX,
+} from "react-icons/fi";
 import "./App.css";
 
 /**
@@ -396,7 +405,10 @@ function App() {
         <section className="FiltersRow" aria-label="Filters">
           <div className="FilterGroup">
             <label className="FilterLabel" htmlFor="priority-filter">
-              Priority
+              <span className="LabelWithIcon">
+                <FiFilter className="UiIcon" aria-hidden="true" />
+                Priority
+              </span>
             </label>
             <select
               id="priority-filter"
@@ -418,7 +430,10 @@ function App() {
 
           <div className="FilterGroup">
             <label className="FilterLabel" htmlFor="status-filter">
-              Status
+              <span className="LabelWithIcon">
+                <FiFilter className="UiIcon" aria-hidden="true" />
+                Status
+              </span>
             </label>
             <select
               id="status-filter"
@@ -487,8 +502,15 @@ function App() {
               ))}
             </select>
 
-            <button className="Btn BtnPrimary" onClick={addTodo} type="button">
-              Add
+            <button
+              className="Btn BtnPrimary BtnWithIcon"
+              onClick={addTodo}
+              type="button"
+              aria-label="Add task"
+              title="Add"
+            >
+              <FiPlus className="BtnIcon" aria-hidden="true" />
+              <span>Add</span>
             </button>
           </div>
         </section>
@@ -526,6 +548,10 @@ function App() {
                     ? todo.priority
                     : "medium";
 
+                const toggleLabel = todo.completed
+                  ? "Mark as not completed"
+                  : "Mark as completed";
+
                 return (
                   <li
                     key={todo.id}
@@ -538,18 +564,14 @@ function App() {
                         }`}
                         onClick={() => toggleCompleted(todo.id)}
                         type="button"
-                        aria-label={
-                          todo.completed
-                            ? "Mark as not completed"
-                            : "Mark as completed"
-                        }
-                        title={
-                          todo.completed
-                            ? "Mark as not completed"
-                            : "Mark as completed"
-                        }
+                        aria-label={toggleLabel}
+                        title={toggleLabel}
                       >
-                        <span className="CheckDot" aria-hidden="true" />
+                        {todo.completed ? (
+                          <FiCheck className="ActionIcon success" aria-hidden="true" />
+                        ) : (
+                          <FiCircle className="ActionIcon" aria-hidden="true" />
+                        )}
                       </button>
 
                       <div className="TodoContent">
@@ -573,7 +595,10 @@ function App() {
                                 className="FilterLabel"
                                 htmlFor={`edit-priority-${todo.id}`}
                               >
-                                Priority
+                                <span className="LabelWithIcon">
+                                  <FiFilter className="UiIcon" aria-hidden="true" />
+                                  Priority
+                                </span>
                               </label>
                               <select
                                 id={`edit-priority-${todo.id}`}
@@ -595,20 +620,24 @@ function App() {
 
                             <div className="EditActions">
                               <button
-                                className="Btn BtnSuccess"
+                                className="Btn BtnSuccess BtnWithIcon"
                                 onClick={saveEdit}
                                 type="button"
                                 title="Save"
+                                aria-label="Save edit"
                               >
-                                Save
+                                <FiCheck className="BtnIcon" aria-hidden="true" />
+                                <span>Save</span>
                               </button>
                               <button
-                                className="Btn BtnGhost"
+                                className="Btn BtnGhost BtnWithIcon"
                                 onClick={cancelEdit}
                                 type="button"
                                 title="Cancel"
+                                aria-label="Cancel edit"
                               >
-                                Cancel
+                                <FiX className="BtnIcon" aria-hidden="true" />
+                                <span>Cancel</span>
                               </button>
                             </div>
                           </>
@@ -627,22 +656,24 @@ function App() {
 
                             <div className="CardActions">
                               <button
-                                className="Btn BtnGhost"
+                                className="Btn BtnGhost BtnWithIcon"
                                 onClick={() => startEdit(todo)}
                                 type="button"
                                 title="Edit"
                                 aria-label="Edit task"
                               >
-                                Edit
+                                <FiEdit2 className="BtnIcon" aria-hidden="true" />
+                                <span>Edit</span>
                               </button>
                               <button
-                                className="Btn BtnDanger"
+                                className="Btn BtnDanger BtnWithIcon"
                                 onClick={() => deleteTodo(todo.id)}
                                 type="button"
                                 title="Delete"
                                 aria-label="Delete task"
                               >
-                                Delete
+                                <FiTrash2 className="BtnIcon" aria-hidden="true" />
+                                <span>Delete</span>
                               </button>
                             </div>
                           </>
