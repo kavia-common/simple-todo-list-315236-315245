@@ -407,6 +407,7 @@ function App() {
                   /** @type {"all" | Priority} */ (e.target.value)
                 )
               }
+              aria-label="Priority filter"
             >
               <option value="all">All</option>
               <option value="low">Low</option>
@@ -428,6 +429,7 @@ function App() {
                   /** @type {"all"|"active"|"completed"} */ (e.target.value)
                 )
               }
+              aria-label="Status filter"
             >
               <option value="all">All</option>
               <option value="active">Active</option>
@@ -435,6 +437,19 @@ function App() {
             </select>
           </div>
         </section>
+
+        <div className="FiltersLegend" aria-label="Priority legend">
+          <span className="FiltersLegendTitle">Legend:</span>
+          <span title="Low priority">
+            <span className="LegendDot low" aria-hidden="true" /> Low
+          </span>
+          <span title="Medium priority">
+            <span className="LegendDot medium" aria-hidden="true" /> Medium
+          </span>
+          <span title="High priority">
+            <span className="LegendDot high" aria-hidden="true" /> High
+          </span>
+        </div>
 
         <section className="AddRow" aria-label="Add a new task">
           <label className="SrOnly" htmlFor="new-todo">

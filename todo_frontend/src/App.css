@@ -101,6 +101,16 @@
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   background: rgba(100, 116, 139, 0.03);
+  box-shadow: 0 1px 0 rgba(17, 24, 39, 0.02);
+  transition: border-color 0.12s ease, box-shadow 0.12s ease,
+    background-color 0.12s ease;
+}
+
+/* Clear "active" state when a group contains focused controls */
+.FilterGroup:focus-within {
+  border-color: rgba(59, 130, 246, 0.35);
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.10);
+  background: rgba(59, 130, 246, 0.04);
 }
 
 .FilterLabel {
@@ -108,6 +118,47 @@
   font-weight: 800;
   color: #0f172a;
   letter-spacing: -0.01em;
+}
+
+/* A small legend that fits cleanly below the filters */
+.FiltersLegend {
+  margin-top: 10px;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+  color: var(--muted);
+  font-size: 12.5px;
+  line-height: 1.4;
+}
+
+.FiltersLegendTitle {
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.LegendDot {
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  border: 1px solid rgba(100, 116, 139, 0.25);
+  background: rgba(100, 116, 139, 0.20);
+  display: inline-block;
+}
+
+.LegendDot.low {
+  background: rgba(100, 116, 139, 0.40);
+  border-color: rgba(100, 116, 139, 0.45);
+}
+
+.LegendDot.medium {
+  background: rgba(59, 130, 246, 0.55);
+  border-color: rgba(59, 130, 246, 0.55);
+}
+
+.LegendDot.high {
+  background: rgba(239, 68, 68, 0.55);
+  border-color: rgba(239, 68, 68, 0.55);
 }
 
 /* Inputs */
@@ -150,6 +201,13 @@
   letter-spacing: -0.01em;
   box-shadow: 0 1px 0 rgba(17, 24, 39, 0.02);
   cursor: pointer;
+  transition: border-color 0.12s ease, box-shadow 0.12s ease,
+    background-color 0.12s ease;
+}
+
+.TodoSelect:hover {
+  border-color: rgba(59, 130, 246, 0.28);
+  box-shadow: 0 6px 16px rgba(17, 24, 39, 0.06);
 }
 
 .TodoSelect:focus {
@@ -289,36 +347,47 @@
 }
 
 .PriorityBadge {
+  /* Modern "pill" badge that stays readable at small sizes */
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  height: 22px;
-  padding: 0 10px;
+  min-height: 22px;
+  padding: 3px 10px;
   border-radius: 999px;
   font-size: 12px;
-  font-weight: 800;
+  font-weight: 900;
   letter-spacing: -0.01em;
   white-space: nowrap;
   border: 1px solid transparent;
   user-select: none;
+  box-shadow: 0 6px 14px rgba(17, 24, 39, 0.08);
 }
 
+/* Low: gray/secondary */
 .Priority-low {
-  background: rgba(100, 116, 139, 0.10);
-  border-color: rgba(100, 116, 139, 0.22);
+  background: rgba(100, 116, 139, 0.12);
+  border-color: rgba(100, 116, 139, 0.26);
   color: #334155;
 }
 
+/* Medium: primary (#3b82f6) */
 .Priority-medium {
-  background: rgba(59, 130, 246, 0.10);
-  border-color: rgba(59, 130, 246, 0.22);
-  color: #1f3a8a;
+  background: rgba(59, 130, 246, 0.14);
+  border-color: rgba(59, 130, 246, 0.34);
+  color: #1e3a8a;
 }
 
+/* High: danger (#ef4444) */
 .Priority-high {
-  background: rgba(239, 68, 68, 0.10);
-  border-color: rgba(239, 68, 68, 0.22);
+  background: rgba(239, 68, 68, 0.14);
+  border-color: rgba(239, 68, 68, 0.34);
   color: #991b1b;
+}
+
+/* When tasks are marked done, keep badges legible but slightly muted */
+.TodoCard.isDone .PriorityBadge {
+  opacity: 0.92;
+  box-shadow: 0 4px 10px rgba(17, 24, 39, 0.06);
 }
 
 .CardActions,
@@ -473,6 +542,10 @@ kbd {
 
   .FiltersRow {
     grid-template-columns: 1fr;
+  }
+
+  .FiltersLegend {
+    gap: 10px;
   }
 
   .AddRow {

@@ -6,7 +6,7 @@ test("renders todo list header and filters", () => {
   const title = screen.getByText(/todo list/i);
   expect(title).toBeInTheDocument();
 
-  // Minimal verification for new filtering controls
-  expect(screen.getByLabelText(/priority/i)).toBeInTheDocument();
-  expect(screen.getByLabelText(/status/i)).toBeInTheDocument();
+  // Minimal verification for filtering controls (accessibility labels)
+  expect(screen.getByLabelText(/priority filter/i)).toBeInTheDocument();
+  expect(screen.getByLabelText(/status filter/i)).toBeInTheDocument();
 });
