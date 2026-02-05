@@ -9,13 +9,32 @@ import "./App.css";
 const STORAGE_KEY = "kavia.todos.v1";
 
 /**
+ * @typedef {"low"|"medium"|"high"} Priority
+ */
+
+/**
  * @typedef {Object} Todo
  * @property {string} id
  * @property {string} title
  * @property {boolean} completed
+ * @property {Priority} priority
  * @property {number} createdAt
  * @property {number} updatedAt
  */
+
+const PRIORITY_LABELS = /** @type {Record<Priority, string>} */ ({
+  low: "Low",
+  medium: "Medium",
+  high: "High",
+});
+
+const PRIORITY_OPTIONS = /** @type {Array<{value: Priority, label: string}>} */ (
+  [
+    { value: "low", label: "Low" },
+    { value: "medium", label: "Medium" },
+    { value: "high", label: "High" },
+  ]
+);
 
 function generateId() {
   // Good enough for local-only persistence; can be replaced with backend IDs later.
@@ -26,12 +45,39 @@ function normalizeTitle(value) {
   return (value ?? "").toString().trim();
 }
 
+/**
+ * Ensure todos loaded from persistence are migration-safe.
+ * - Existing tasks without "priority" are treated as "medium".
+ * - Keeps unknown values safe by coercing to "medium".
+ * @param {any[]} items
+ * @returns {Todo[]}
+ */
+function normalizeTodos(items) {
+  if (!Array.isArray(items)) return [];
+  return items
+    .filter((t) => t && typeof t === "object")
+    .map((t) => {
+      /** @type {Priority} */
+      const priority =
+        t.priority === "low" || t.priority === "medium" || t.priority === "high"
+          ? t.priority
+          : "medium";
+
+      return {
+        id: String(t.id ?? generateId()),
+        title: String(t.title ?? ""),
+        completed: Boolean(t.completed),
+        priority,
+        createdAt: Number(t.createdAt ?? Date.now()),
+        updatedAt: Number(t.updatedAt ?? Date.now()),
+      };
+    });
+}
+
 function getConfiguredApiBase() {
   // Respect existing env vars; do not hardcode.
   return (
-    process.env.REACT_APP_API_BASE ||
-    process.env.REACT_APP_BACKEND_URL ||
-    ""
+    process.env.REACT_APP_API_BASE || process.env.REACT_APP_BACKEND_URL || ""
   ).trim();
 }
 
@@ -61,8 +107,7 @@ class LocalTodoRepository {
     if (!raw) return [];
     try {
       const data = JSON.parse(raw);
-      if (!Array.isArray(data)) return [];
-      return data;
+      return normalizeTodos(data);
     } catch {
       return [];
     }
@@ -134,8 +179,21 @@ async function createTodoRepository() {
 function App() {
   const [todos, setTodos] = useState(/** @type {Todo[]} */ ([]));
   const [newTitle, setNewTitle] = useState("");
+  const [newPriority, setNewPriority] = useState(/** @type {Priority} */ ("medium"));
+
   const [editingId, setEditingId] = useState(/** @type {string|null} */ (null));
   const [editingTitle, setEditingTitle] = useState("");
+  const [editingPriority, setEditingPriority] = useState(
+    /** @type {Priority} */ ("medium")
+  );
+
+  const [priorityFilter, setPriorityFilter] = useState(
+    /** @type {"all" | Priority} */ ("all")
+  );
+  const [statusFilter, setStatusFilter] = useState(
+    /** @type {"all"|"active"|"completed"} */ ("all")
+  );
+
   const [error, setError] = useState("");
   const [repo, setRepo] = useState(null);
 
@@ -147,6 +205,27 @@ function App() {
     const remaining = total - completed;
     return { total, completed, remaining };
   }, [todos]);
+
+  const visibleTodos = useMemo(() => {
+    return todos.filter((t) => {
+      const normalizedPriority =
+        t.priority === "low" || t.priority === "medium" || t.priority === "high"
+          ? t.priority
+          : "medium";
+
+      const matchesPriority =
+        priorityFilter === "all" ? true : normalizedPriority === priorityFilter;
+
+      const matchesStatus =
+        statusFilter === "all"
+          ? true
+          : statusFilter === "active"
+            ? !t.completed
+            : t.completed;
+
+      return matchesPriority && matchesStatus;
+    });
+  }, [todos, priorityFilter, statusFilter]);
 
   useEffect(() => {
     // Initialize repository, then load todos.
@@ -198,6 +277,7 @@ function App() {
         id: generateId(),
         title,
         completed: false,
+        priority: newPriority || "medium",
         createdAt: now,
         updatedAt: now,
       },
@@ -205,6 +285,7 @@ function App() {
 
     setTodos(next);
     setNewTitle("");
+    setNewPriority("medium");
     try {
       await persist(next);
     } catch (e) {
@@ -244,12 +325,18 @@ function App() {
     setError("");
     setEditingId(todo.id);
     setEditingTitle(todo.title);
+    setEditingPriority(
+      todo.priority === "low" || todo.priority === "medium" || todo.priority === "high"
+        ? todo.priority
+        : "medium"
+    );
   };
 
   // PUBLIC_INTERFACE
   const cancelEdit = () => {
     setEditingId(null);
     setEditingTitle("");
+    setEditingPriority("medium");
   };
 
   // PUBLIC_INTERFACE
@@ -265,12 +352,15 @@ function App() {
 
     const now = Date.now();
     const next = todos.map((t) =>
-      t.id === editingId ? { ...t, title, updatedAt: now } : t
+      t.id === editingId
+        ? { ...t, title, priority: editingPriority || "medium", updatedAt: now }
+        : t
     );
 
     setTodos(next);
     setEditingId(null);
     setEditingTitle("");
+    setEditingPriority("medium");
     try {
       await persist(next);
     } catch (e) {
@@ -298,10 +388,53 @@ function App() {
             </span>
           </div>
           <p className="TodoSubtitle">
-            Add tasks, edit them, mark complete, and keep everything saved
-            locally.
+            Add tasks, edit them, mark complete, filter your view, and keep
+            everything saved locally.
           </p>
         </header>
+
+        <section className="FiltersRow" aria-label="Filters">
+          <div className="FilterGroup">
+            <label className="FilterLabel" htmlFor="priority-filter">
+              Priority
+            </label>
+            <select
+              id="priority-filter"
+              className="TodoSelect"
+              value={priorityFilter}
+              onChange={(e) =>
+                setPriorityFilter(
+                  /** @type {"all" | Priority} */ (e.target.value)
+                )
+              }
+            >
+              <option value="all">All</option>
+              <option value="low">Low</option>
+              <option value="medium">Medium</option>
+              <option value="high">High</option>
+            </select>
+          </div>
+
+          <div className="FilterGroup">
+            <label className="FilterLabel" htmlFor="status-filter">
+              Status
+            </label>
+            <select
+              id="status-filter"
+              className="TodoSelect"
+              value={statusFilter}
+              onChange={(e) =>
+                setStatusFilter(
+                  /** @type {"all"|"active"|"completed"} */ (e.target.value)
+                )
+              }
+            >
+              <option value="all">All</option>
+              <option value="active">Active</option>
+              <option value="completed">Completed</option>
+            </select>
+          </div>
+        </section>
 
         <section className="AddRow" aria-label="Add a new task">
           <label className="SrOnly" htmlFor="new-todo">
@@ -318,9 +451,31 @@ function App() {
             maxLength={140}
             inputMode="text"
           />
-          <button className="Btn BtnPrimary" onClick={addTodo} type="button">
-            Add
-          </button>
+
+          <div className="AddActions">
+            <label className="SrOnly" htmlFor="new-priority">
+              Priority
+            </label>
+            <select
+              id="new-priority"
+              className="TodoSelect"
+              value={newPriority}
+              onChange={(e) =>
+                setNewPriority(/** @type {Priority} */ (e.target.value))
+              }
+              aria-label="New task priority"
+            >
+              {PRIORITY_OPTIONS.map((opt) => (
+                <option key={opt.value} value={opt.value}>
+                  {opt.label}
+                </option>
+              ))}
+            </select>
+
+            <button className="Btn BtnPrimary" onClick={addTodo} type="button">
+              Add
+            </button>
+          </div>
         </section>
 
         {error ? (
@@ -337,10 +492,24 @@ function App() {
                 Add your first task above to get started.
               </div>
             </div>
+          ) : visibleTodos.length === 0 ? (
+            <div className="TodoEmpty" role="status" aria-live="polite">
+              <div className="TodoEmptyTitle">No matching tasks</div>
+              <div className="TodoEmptyText">
+                Try changing the Priority or Status filters.
+              </div>
+            </div>
           ) : (
             <ul className="TodoList">
-              {todos.map((todo) => {
+              {visibleTodos.map((todo) => {
                 const isEditing = editingId === todo.id;
+                /** @type {Priority} */
+                const priority =
+                  todo.priority === "low" ||
+                  todo.priority === "medium" ||
+                  todo.priority === "high"
+                    ? todo.priority
+                    : "medium";
 
                 return (
                   <li
@@ -383,6 +552,32 @@ function App() {
                               autoFocus
                               maxLength={140}
                             />
+
+                            <div className="EditMetaRow" aria-label="Edit priority">
+                              <label
+                                className="FilterLabel"
+                                htmlFor={`edit-priority-${todo.id}`}
+                              >
+                                Priority
+                              </label>
+                              <select
+                                id={`edit-priority-${todo.id}`}
+                                className="TodoSelect"
+                                value={editingPriority}
+                                onChange={(e) =>
+                                  setEditingPriority(
+                                    /** @type {Priority} */ (e.target.value)
+                                  )
+                                }
+                              >
+                                {PRIORITY_OPTIONS.map((opt) => (
+                                  <option key={opt.value} value={opt.value}>
+                                    {opt.label}
+                                  </option>
+                                ))}
+                              </select>
+                            </div>
+
                             <div className="EditActions">
                               <button
                                 className="Btn BtnSuccess"
@@ -406,6 +601,13 @@ function App() {
                           <>
                             <div className="TodoTextRow">
                               <div className="TodoText">{todo.title}</div>
+                              <span
+                                className={`PriorityBadge Priority-${priority}`}
+                                aria-label={`Priority ${PRIORITY_LABELS[priority]}`}
+                                title={`Priority: ${PRIORITY_LABELS[priority]}`}
+                              >
+                                {PRIORITY_LABELS[priority]}
+                              </span>
                             </div>
 
                             <div className="CardActions">

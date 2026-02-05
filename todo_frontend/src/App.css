@@ -84,6 +84,33 @@
   line-height: 1.5;
 }
 
+/* Filters */
+.FiltersRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.FilterGroup {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 10px;
+  align-items: center;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: rgba(100, 116, 139, 0.03);
+}
+
+.FilterLabel {
+  font-size: 12.5px;
+  font-weight: 800;
+  color: #0f172a;
+  letter-spacing: -0.01em;
+}
+
+/* Inputs */
 .AddRow {
   margin-top: 18px;
   display: grid;
@@ -108,6 +135,32 @@
 .TodoInput:focus {
   border-color: rgba(59, 130, 246, 0.55);
   box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.18);
+}
+
+.TodoSelect {
+  height: 44px;
+  padding: 0 12px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  background: #ffffff;
+  color: var(--text);
+  outline: none;
+  font-size: 13.5px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  box-shadow: 0 1px 0 rgba(17, 24, 39, 0.02);
+  cursor: pointer;
+}
+
+.TodoSelect:focus {
+  border-color: rgba(59, 130, 246, 0.55);
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.18);
+}
+
+.AddActions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
 }
 
 .TodoError {
@@ -235,12 +288,54 @@
   text-decoration-thickness: 2px;
 }
 
+.PriorityBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 22px;
+  padding: 0 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  border: 1px solid transparent;
+  user-select: none;
+}
+
+.Priority-low {
+  background: rgba(100, 116, 139, 0.10);
+  border-color: rgba(100, 116, 139, 0.22);
+  color: #334155;
+}
+
+.Priority-medium {
+  background: rgba(59, 130, 246, 0.10);
+  border-color: rgba(59, 130, 246, 0.22);
+  color: #1f3a8a;
+}
+
+.Priority-high {
+  background: rgba(239, 68, 68, 0.10);
+  border-color: rgba(239, 68, 68, 0.22);
+  color: #991b1b;
+}
+
 .CardActions,
 .EditActions {
   margin-top: 10px;
   display: flex;
   gap: 8px;
   justify-content: flex-end;
+  flex-wrap: wrap;
+}
+
+.EditMetaRow {
+  margin-top: 10px;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  justify-content: flex-start;
   flex-wrap: wrap;
 }
 
@@ -311,7 +406,8 @@
 .Btn:focus-visible,
 .CheckBtn:focus-visible,
 .TodoInput:focus-visible,
-.TodoEditInput:focus-visible {
+.TodoEditInput:focus-visible,
+.TodoSelect:focus-visible {
   outline: none;
   box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.18);
 }
@@ -375,8 +471,18 @@ kbd {
     padding: 18px;
   }
 
+  .FiltersRow {
+    grid-template-columns: 1fr;
+  }
+
   .AddRow {
     grid-template-columns: 1fr;
+  }
+
+  .AddActions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
   }
 
   .Btn {
