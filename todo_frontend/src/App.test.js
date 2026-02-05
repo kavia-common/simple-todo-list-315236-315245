@@ -9,4 +9,8 @@ test("renders todo list header and filters", () => {
   // Minimal verification for filtering controls (accessibility labels)
   expect(screen.getByLabelText(/priority filter/i)).toBeInTheDocument();
   expect(screen.getByLabelText(/status filter/i)).toBeInTheDocument();
+
+  // New due date + due status filtering controls
+  expect(screen.getByLabelText(/due date/i)).toBeInTheDocument();
+  expect(screen.getByLabelText(/due status filter/i)).toBeInTheDocument();
 });

@@ -331,6 +331,14 @@
   gap: 10px;
 }
 
+.TodoBadges {
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+}
+
 .TodoText {
   font-size: 15px;
   line-height: 1.45;
@@ -382,6 +390,97 @@
   background: rgba(239, 68, 68, 0.14);
   border-color: rgba(239, 68, 68, 0.34);
   color: #991b1b;
+}
+
+/* Due badges */
+.DueBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 22px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  border: 1px solid transparent;
+  user-select: none;
+  box-shadow: 0 6px 14px rgba(17, 24, 39, 0.08);
+}
+
+.Due-today {
+  /* Primary-ish tint */
+  background: rgba(59, 130, 246, 0.12);
+  border-color: rgba(59, 130, 246, 0.30);
+  color: #1e3a8a;
+}
+
+.Due-upcoming {
+  /* Success-ish tint */
+  background: rgba(6, 182, 212, 0.12);
+  border-color: rgba(6, 182, 212, 0.28);
+  color: #0f766e;
+}
+
+.Due-overdue {
+  /* Warning/danger tint with readable text */
+  background: rgba(239, 68, 68, 0.12);
+  border-color: rgba(239, 68, 68, 0.30);
+  color: #991b1b;
+}
+
+/* Reminder toasts */
+.ReminderToasts {
+  position: sticky;
+  top: 12px;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.ReminderToast {
+  position: relative;
+  padding: 12px 42px 12px 12px;
+  border-radius: var(--radius-lg);
+  border: 1px solid rgba(59, 130, 246, 0.20);
+  background: linear-gradient(
+    0deg,
+    rgba(59, 130, 246, 0.08),
+    rgba(255, 255, 255, 0.98)
+  );
+  box-shadow: var(--shadow-soft);
+  color: #0f172a;
+}
+
+.ReminderToastTitle {
+  font-weight: 900;
+  font-size: 13px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ReminderToastMsg {
+  margin-top: 2px;
+  font-size: 13.5px;
+  color: rgba(15, 23, 42, 0.85);
+}
+
+.ReminderToastClose {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 30px;
+  height: 30px;
+  border-radius: 999px;
+  border: 1px solid rgba(100, 116, 139, 0.25);
+  background: #ffffff;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
 }
 
 /* When tasks are marked done, keep badges legible but slightly muted */
